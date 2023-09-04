@@ -22,6 +22,7 @@ func permutations(nums []int) [][]int {
 		for _, i := range p {
 			temp = append(temp, nums[i])
 		}
+		permTrie.insert(temp)
 		result = append(result, temp)
 		temp = nil
 	}
@@ -55,11 +56,12 @@ func main() {
 				continue
 			}
 			if removeDuplicates(a, b) {
-				fmt.Println(i, j)
-				fmt.Println(a, b)
+				continue
 			}
 		}
 	}
+
+	fmt.Println(permTrie.search([]int{10, 10, 25}))
 
 	//fmt.Println(len(pResult))
 

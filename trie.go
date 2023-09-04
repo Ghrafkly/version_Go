@@ -1,7 +1,6 @@
 package main
 
 type TrieNode struct {
-	value    int
 	children map[int]*TrieNode
 	isEnd    bool
 }
@@ -20,10 +19,21 @@ func (t *Trie) insert(nums []int) {
 	current := t.root
 	for _, index := range nums {
 		if current.children[index] == nil {
+			current.children = map[int]*TrieNode{}
 			current.children[index] = new(TrieNode)
 		}
 		current = current.children[index]
 	}
 	current.isEnd = true
+}
 
+func (t *Trie) search(nums []int) bool {
+	current := t.root
+	for _, index := range nums {
+		if current.children[index] == nil {
+			return false
+		}
+		current = current.children[index]
+	}
+	return current.isEnd
 }
