@@ -9,6 +9,7 @@ var (
 	numbers     = []int{1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 25, 50, 75, 100}
 	testNumbers = []int{10, 10, 25, 50, 75, 100}
 	k           = 3 // number of elements in each combination
+	permTrie    = NewTrie()
 )
 
 func permutations(nums []int) [][]int {
@@ -28,6 +29,18 @@ func permutations(nums []int) [][]int {
 	return result
 }
 
+func removeDuplicates(a, b []int) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := range a {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+	return true
+}
+
 func main() {
 	cResult := combinations(testNumbers)
 
@@ -36,6 +49,18 @@ func main() {
 		pResult = append(pResult, permutations(c)...)
 	}
 
-	fmt.Println(pResult)
+	for i, a := range pResult {
+		for j, b := range pResult {
+			if i == j {
+				continue
+			}
+			if removeDuplicates(a, b) {
+				fmt.Println(i, j)
+				fmt.Println(a, b)
+			}
+		}
+	}
+
+	//fmt.Println(len(pResult))
 
 }
