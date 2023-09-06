@@ -5,6 +5,8 @@ import (
 	"gonum.org/v1/gonum/stat/combin"
 )
 
+type M map[int]M
+
 var (
 	numbers     = []int{1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 25, 50, 75, 100}
 	testNumbers = []int{10, 10, 25, 50, 75, 100}
@@ -12,21 +14,17 @@ var (
 	permTrie    = NewTrie()
 )
 
-func permutations(nums []int) [][]int {
-	var result [][]int
+func permutations(nums []int) {
 	perms := combin.Permutations(len(nums), len(nums))
 
 	var temp []int
-
 	for _, p := range perms {
 		for _, i := range p {
 			temp = append(temp, nums[i])
 		}
-		result = append(result, temp)
+		permTrie.insert(temp)
 		temp = nil
 	}
-
-	return result
 }
 
 func removeDuplicates(a, b []int) bool {
@@ -44,23 +42,10 @@ func removeDuplicates(a, b []int) bool {
 func main() {
 	cResult := combinations(testNumbers)
 
-	var pResult [][]int
-	for _, c := range cResult {
-		pResult = append(pResult, permutations(c)...)
+	for _, combination := range cResult {
+		permutations(combination)
 	}
 
-	for i, a := range pResult {
-		for j, b := range pResult {
-			if i == j {
-				continue
-			}
-			if removeDuplicates(a, b) {
-				fmt.Println(i, j)
-				fmt.Println(a, b)
-			}
-		}
-	}
-
-	//fmt.Println(len(pResult))
-
+	fmt.Println(len(permTrie.display()))
+	fmt.Println(permTrie.display())
 }
