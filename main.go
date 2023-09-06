@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"sync"
+	"time"
 )
 
 type M map[int]M
@@ -9,17 +11,21 @@ type M map[int]M
 var (
 	numbers     = []int{1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 25, 50, 75, 100}
 	testNumbers = []int{10, 10, 25, 50, 75, 100}
-	k           = 3 // number of elements in each combination
+	k           = 6 // number of elements in each combination
 	permTrie    = NewTrie()
+	wg          sync.WaitGroup
+	mutex       sync.Mutex
 )
 
 func main() {
-	cResult := combinations(testNumbers)
+	start := time.Now()
+	cResult := combinations(numbers)
 
 	for _, combination := range cResult {
-		permutations(combination, permTrie)
+		permutations(combination)
 	}
 
-	fmt.Println(len(permTrie.display()))
-	fmt.Println(permTrie.display())
+	fmt.Printf("Number of combinations: %d\n", len(cResult))
+	fmt.Printf("Number of permutations: %d\n", len(permTrie.display()))
+	fmt.Println("Time taken:", time.Since(start))
 }

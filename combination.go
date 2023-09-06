@@ -8,7 +8,6 @@ func combinations(nums []int) [][]int {
 
 	var temp []int
 
-	// combs i.e. [0,1,2], [3,1,2]
 	for _, c := range combs {
 		for _, i := range c {
 			temp = append(temp, nums[i])

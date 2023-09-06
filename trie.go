@@ -2,7 +2,7 @@ package main
 
 type TrieNode struct {
 	children map[int]*TrieNode
-	value    int
+	//value   int
 }
 
 type Trie struct {
@@ -12,11 +12,13 @@ type Trie struct {
 func NewTrie() *Trie {
 	t := new(Trie)
 	t.root = new(TrieNode)
+	//t.root = newNode(0)
 	return t
 }
 
 func (t *TrieNode) isEnd() bool {
 	return t.children == nil
+	//return len(t.children) == 0
 }
 
 func (t *Trie) insert(nums []int) {
@@ -71,3 +73,22 @@ func getPaths(path map[int]*TrieNode) [][]int {
 	}
 	return result
 }
+
+//func newNode(value int) *TrieNode {
+//	return &TrieNode{
+//		value:    value,
+//		children: make(map[int]*TrieNode), // TO prevent panic
+//	}
+//}
+//
+//func (t *TrieNode) insert(nums []int) {
+//	if len(nums) == 0 {
+//		return
+//	}
+//	v, ok := t.children[nums[0]]
+//	if !ok {
+//		v = newNode(nums[0])
+//		t.children[nums[0]] = v
+//	}
+//	v.insert(nums[1:])
+//}

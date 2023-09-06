@@ -2,7 +2,7 @@ package main
 
 import "gonum.org/v1/gonum/stat/combin"
 
-func permutations(nums []int, trie *Trie) {
+func permutations(nums []int) {
 	perms := combin.Permutations(len(nums), len(nums))
 
 	var temp []int
@@ -10,7 +10,8 @@ func permutations(nums []int, trie *Trie) {
 		for _, i := range p {
 			temp = append(temp, nums[i])
 		}
-		trie.insert(temp)
+		permTrie.insert(temp)
+		//permTrie.root.insert(temp)
 		temp = nil
 	}
 }
