@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"gonum.org/v1/gonum/stat/combin"
 )
 
 type M map[int]M
@@ -14,36 +13,11 @@ var (
 	permTrie    = NewTrie()
 )
 
-func permutations(nums []int) {
-	perms := combin.Permutations(len(nums), len(nums))
-
-	var temp []int
-	for _, p := range perms {
-		for _, i := range p {
-			temp = append(temp, nums[i])
-		}
-		permTrie.insert(temp)
-		temp = nil
-	}
-}
-
-func removeDuplicates(a, b []int) bool {
-	if len(a) != len(b) {
-		return false
-	}
-	for i := range a {
-		if a[i] != b[i] {
-			return false
-		}
-	}
-	return true
-}
-
 func main() {
 	cResult := combinations(testNumbers)
 
 	for _, combination := range cResult {
-		permutations(combination)
+		permutations(combination, permTrie)
 	}
 
 	fmt.Println(len(permTrie.display()))
