@@ -11,7 +11,6 @@ func permutations(nums []int) {
 			temp = append(temp, nums[i])
 		}
 		permTrie.insert(temp)
-		//permTrie.root.insert(temp)
 		temp = nil
 	}
 }
