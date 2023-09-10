@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"sync"
 	"time"
 )
@@ -20,13 +19,12 @@ type PrettyPrinter struct {
 
 var (
 	operators      = []int8{-1, -2, -3, -4}
-	numbers        = []int8{1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 25, 50, 75, 100} // 177100 combinations; 5322360 permutations; 228904058880 equations
-	testNumbers    = []int8{10, 10, 25, 50, 75, 100}                                                          // 1 combination; 360 permutations; 15482880 equations
-	testNumbersv2  = []int8{1, 2, 10, 10, 25, 50, 75, 100}                                                    // 28 combinations; 10440 permutations; 449003520 equations
-	permTrie       = NewTrie()                                                                                // Avoids duplicate permutations
-	equationsCount int64
-	permutationMap = make(map[*[]int8][][]int8) // Stores postfix equations for each permutation
-	testMap        sync.Map
+	numbers        = []int8{1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 25, 50, 75, 100} // 177100 combinations; 5322360 permutations; 228904058880 equations
+	testNumbers    = []int8{10, 10, 25, 50, 75, 100}                                                       // 1 combination; 360 permutations; 15482880 equations
+	testNumbersV2  = []int8{1, 2, 10, 10, 25, 50, 75, 100}                                                 // 28 combinations; 10440 permutations; 449003520 equations
+	permTrie       = NewTrie()                                                                             // Avoids duplicate permutations
+	equationsCount int64                                                                                   // Tallies the total number of postfix equations
+	testMap        sync.Map                                                                                // Stores postfix equations for each permutation
 	wg             sync.WaitGroup
 )
 
@@ -39,17 +37,8 @@ func main() {
 
 	application(
 		enabled,
-		testNumbers,
+		testNumbersV2,
 	)
-
-	fmt.Println("Test Map:")
-
-	count := 0
-	testMap.Range(func(key, value interface{}) bool {
-		count += 1
-		return true
-	})
-	fmt.Println(count)
 }
 
 func application(enabled map[string]bool, numbers []int8) {
