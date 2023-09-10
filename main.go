@@ -1,16 +1,16 @@
 package main
 
 import (
-	"github.com/rodaine/table"
+	"fmt"
+	"sync"
 	"time"
-
-	"github.com/fatih/color"
 )
 
 type Tracker struct {
-	name  string
-	time  time.Duration
-	count int
+	name    string
+	time    time.Duration
+	count   int
+	enabled bool
 }
 
 type PrettyPrinter struct {
@@ -24,95 +24,65 @@ var (
 	testNumbers    = []int8{10, 10, 25, 50, 75, 100}                                                          // 1 combination; 360 permutations; 15482880 equations
 	testNumbersv2  = []int8{1, 2, 10, 10, 25, 50, 75, 100}                                                    // 28 combinations; 10440 permutations; 449003520 equations
 	permTrie       = NewTrie()                                                                                // Avoids duplicate permutations
-	equationsCount int
-	permutationMap = make(map[int][][]int8) // Stores postfix equations for each permutation
+	equationsCount int64
+	permutationMap = make(map[*[]int8][][]int8) // Stores postfix equations for each permutation
+	testMap        sync.Map
+	wg             sync.WaitGroup
 )
 
 func main() {
-	pp := PrettyPrinter{Headers: []string{"Name", "Time", "Count"}}
+	var enabled = map[string]bool{
+		"combination": true,
+		"permutation": true,
+		"postfix":     true,
+	}
+
+	application(
+		enabled,
+		testNumbers,
+	)
+
+	fmt.Println("Test Map:")
+
+	count := 0
+	testMap.Range(func(key, value interface{}) bool {
+		count += 1
+		return true
+	})
+	fmt.Println(count)
+}
+
+func application(enabled map[string]bool, numbers []int8) {
+	var cResult [][]int8
+
+	var combinationTime time.Duration
+	var permutationsTime time.Duration
+	var postfixTime time.Duration
+
+	pp := PrettyPrinter{Headers: []string{"Name", "Time", "Count", "Enabled"}}
+
 	start := time.Now()
 	k := 6
 
-	// 1. Combinations //
-	cResult := combinations(testNumbersv2, k)
-	combinationTime := time.Since(start)
-	// =============== //
-
-	// 2. Permutations //
-	for _, combination := range cResult {
-		permutations(combination)
+	if enabled["combination"] {
+		cResult = combinationRunner(numbers, k)
+		combinationTime = time.Since(start)
 	}
-	permutationsTime := time.Since(start) - combinationTime
-	// =============== //
 
-	// 3. Postfix //
-	for i, permutation := range permTrie.getPaths() {
-		result := postfix(permutation)
-		permutationMap[i] = result
-
-		equationsCount += len(result)
+	if enabled["permutation"] {
+		permutationRunner(cResult)
+		permutationsTime = time.Since(start) - combinationTime
 	}
-	postfixTime := time.Since(start) - permutationsTime
-	// =============== //
 
-	//// 1. Combinations //
-	//cResult := combinationGenerator(testNumbersv2, k)
-	//combinationTime := time.Since(start)
-	//// =============== //
-	//
-	//// 2. Permutations //
-	//permutationGenerator(cResult)
-	//permutationsTime := time.Since(start) - combinationTime
-	//// =============== //
-	//
-	//// 3. Postfix //
-	//postfixGenerator(permTrie.getPaths())
-	//postfixTime := time.Since(start) - permutationsTime
-	//// =============== //
+	if enabled["postfix"] {
+		postfixRunner(permTrie.getPaths())
+		postfixTime = time.Since(start) - permutationsTime
+	}
 
-	pp.Tracker = append(pp.Tracker, Tracker{"Combinations", combinationTime, len(cResult)})
-	pp.Tracker = append(pp.Tracker, Tracker{"Permutations", permutationsTime, permTrie.totalPaths()})
-	pp.Tracker = append(pp.Tracker, Tracker{"Postfix", postfixTime, equationsCount})
-	pp.Tracker = append(pp.Tracker, Tracker{"Total", time.Since(start), 0})
+	pp.Tracker = append(pp.Tracker, Tracker{"Combinations", combinationTime, len(cResult), enabled["combination"]})
+	pp.Tracker = append(pp.Tracker, Tracker{"Permutations", permutationsTime, permTrie.totalPaths(), enabled["permutation"]})
+	pp.Tracker = append(pp.Tracker, Tracker{"Postfix", postfixTime, int(equationsCount), enabled["postfix"]})
+	pp.Tracker = append(pp.Tracker, Tracker{"Total", time.Since(start), 0, true})
 
 	prettyPrint(pp)
-}
-
-func prettyPrint(pp PrettyPrinter) {
-	headerFmt := color.New(color.FgGreen, color.Bold, color.Underline).SprintfFunc()
-	columnFmt := color.New(color.FgYellow).SprintfFunc()
-
-	headers := make([]interface{}, len(pp.Headers))
-	for i, h := range pp.Headers {
-		headers[i] = h
-	}
-
-	tbl := table.New(headers...)
-
-	tbl.WithHeaderFormatter(headerFmt).WithFirstColumnFormatter(columnFmt).WithPadding(5)
-
-	for _, t := range pp.Tracker {
-		tbl.AddRow(t.name, t.time, t.count)
-	}
-
-	tbl.Print()
-}
-
-func combinationGenerator(nums []int8, k int) [][]int8 {
-	return combinations(nums, k)
-}
-
-func permutationGenerator(combinations [][]int8) {
-	for _, combination := range combinations {
-		permutations(combination)
-	}
-}
-
-func postfixGenerator(permutations [][]int8) {
-	for i, permutation := range permutations {
-		result := postfix(permutation)
-		permutationMap[i] = result
-
-		equationsCount += len(result)
-	}
 }
