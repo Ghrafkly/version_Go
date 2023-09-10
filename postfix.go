@@ -4,10 +4,10 @@ func postfix(nums []int8) [][]int8 {
 	var current []int8            // Stores the current postfix equation
 	var equations [][]int8        // Stores all postfix equations for a given permutation
 	var operatorsNeeded int8 = -1 // The number of operators needed to complete the postfix equation
-	return postfixGenerator(nums, current, operatorsNeeded, equations)
+	return genPostfix(nums, current, operatorsNeeded, equations)
 }
 
-func postfixGenerator(nums []int8, current []int8, operatorsNeeded int8, equations [][]int8) [][]int8 {
+func genPostfix(nums []int8, current []int8, operatorsNeeded int8, equations [][]int8) [][]int8 {
 	if operatorsNeeded == 0 && len(nums) == 0 {
 		c := make([]int8, len(current))
 		copy(c, current)
@@ -18,7 +18,7 @@ func postfixGenerator(nums []int8, current []int8, operatorsNeeded int8, equatio
 	if operatorsNeeded > 0 {
 		for _, op := range operators {
 			current = append(current, op)
-			equations = postfixGenerator(nums, current, operatorsNeeded-1, equations)
+			equations = genPostfix(nums, current, operatorsNeeded-1, equations)
 			current = current[:len(current)-1]
 		}
 	}
@@ -27,7 +27,7 @@ func postfixGenerator(nums []int8, current []int8, operatorsNeeded int8, equatio
 		v := nums[size-1]
 		nums = nums[:size-1]
 		current = append(current, v)
-		equations = postfixGenerator(nums, current, operatorsNeeded+1, equations)
+		equations = genPostfix(nums, current, operatorsNeeded+1, equations)
 	}
 
 	return equations
