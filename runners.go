@@ -15,15 +15,8 @@ func permutationRunner(combinations [][]int8) {
 }
 
 func postfixRunner(permutations [][]int8) {
-	//for i := range permutations {
-	//	result := postfix(permutations[i])
-	//	permutationMap[&permutations[i]] = result
-	//	equationsCount += int64(len(result))
-	//	delete(permutationMap, &permutations[i])
-	//}
-
+	wg.Add(len(permutations))
 	for i := range permutations {
-		wg.Add(1)
 		go func(index int, perms [][]int8) {
 			result := postfix(perms[index])
 			testMap.Store(&perms[index], result)

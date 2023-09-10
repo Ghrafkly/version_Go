@@ -32,12 +32,12 @@ func main() {
 	var enabled = map[string]bool{
 		"combination": true,
 		"permutation": true,
-		"postfix":     true,
+		"postfix":     false,
 	}
 
 	application(
 		enabled,
-		testNumbersV2,
+		numbers,
 	)
 }
 
