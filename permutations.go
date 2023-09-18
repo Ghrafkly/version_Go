@@ -1,8 +1,11 @@
 package main
 
-import "gonum.org/v1/gonum/stat/combin"
+import (
+	"gonum.org/v1/gonum/stat/combin"
+)
 
-func permutations(nums []int8) {
+func permutations(nums []int8) [][]int8 {
+	trie := NewTrie()
 	perms := combin.Permutations(len(nums), len(nums))
 
 	var temp []int8
@@ -10,7 +13,10 @@ func permutations(nums []int8) {
 		for _, i := range p {
 			temp = append(temp, nums[i])
 		}
-		permTrie.insert(temp)
+		//trie.insert(temp)
+		permutationTrie.insert(temp)
 		temp = nil
 	}
+
+	return trie.getPaths()
 }
