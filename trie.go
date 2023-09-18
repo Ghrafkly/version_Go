@@ -68,6 +68,7 @@ func getPaths(path map[int8]*TrieNode) [][]int8 {
 			result = append(result, append([]int8{k}, p...))
 		}
 	}
+
 	return result
 }
 

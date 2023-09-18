@@ -2,11 +2,7 @@ package main
 
 import (
 	"flag"
-	"log"
 	_ "net/http/pprof"
-	"os"
-	"runtime"
-	"runtime/pprof"
 	"sync"
 	"time"
 )
@@ -42,6 +38,14 @@ var (
 )
 
 func main() {
+	flag.Parse()
+	if *cpuprofile != "" {
+		defer cpuProfiler()()
+	}
+	if *memprofile != "" {
+		defer memProfiler()()
+	}
+
 	var config = map[string]bool{
 		"combination": true,
 		"permutation": true,
@@ -49,25 +53,7 @@ func main() {
 		"print":       true,
 	}
 
-	// Test single call of postfix
-	testTime := time.Now()
-	eq := postfix(numbers1)
-	log.Println("Time:", time.Since(testTime))
-	log.Println("Equations:", len(eq))
-
 	application(config, numbers2)
-
-	if *memprofile != "" {
-		f, err := os.Create(*memprofile)
-		if err != nil {
-			log.Fatal("could not create memory profile: ", err)
-		}
-		defer f.Close() // error handling omitted for example
-		runtime.GC()    // get up-to-date statistics
-		if err := pprof.WriteHeapProfile(f); err != nil {
-			log.Fatal("could not write memory profile: ", err)
-		}
-	}
 }
 
 func application(enabled map[string]bool, numbers []int8) {
@@ -89,28 +75,18 @@ func application(enabled map[string]bool, numbers []int8) {
 		combinationTime = time.Since(start)
 	}
 
-	//if enabled["permutation"] {
-	//	permutationRunner(combinationTrie.getPaths())
-	//	permutationsTime = time.Since(start) - combinationTime
-	//}
-	//
-	//if enabled["postfix"] {
-	//	combinationPermutationMap.Range(func(key, value interface{}) bool {
-	//		testMap[key.(*[]int8)] = value.([][]int8)
-	//		return true
-	//	})
-	//
-	//	postfixRunner()
-	//	postfixTime = time.Since(start) - permutationsTime
-	//}
-
 	if enabled["permutation"] {
-		permutationRunnerSingleThread(combinationTrie.getPaths())
+		permutationRunner(combinationTrie.getPaths())
 		permutationsTime = time.Since(start) - combinationTime
 	}
 
 	if enabled["postfix"] {
-		postfixRunnerSingleThread(permutationTrie.getPaths())
+		combinationPermutationMap.Range(func(key, value interface{}) bool {
+			testMap[key.(*[]int8)] = value.([][]int8)
+			return true
+		})
+
+		postfixRunner()
 		postfixTime = time.Since(start) - permutationsTime
 	}
 
@@ -124,9 +100,10 @@ func application(enabled map[string]bool, numbers []int8) {
 			enabled: enabled["combination"],
 		})
 		pp.Tracker = append(pp.Tracker, Tracker{
-			name:    "Permutations",
-			time:    permutationsTime,
-			count:   int(permutationCount),
+			name:  "Permutations",
+			time:  permutationsTime,
+			count: int(permutationCount),
+			//count:   permutationTrie.totalPaths(),
 			enabled: enabled["permutation"],
 		})
 		pp.Tracker = append(pp.Tracker, Tracker{
