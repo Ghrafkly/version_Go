@@ -21,7 +21,8 @@ var (
 
 func main() {
 	flag.Parse()
-	profiler.CPUProfiler()
+	defer profiler.CPUProfiler()()
+	defer profiler.MemProfiler()()
 
 	var config = map[string]bool{
 		"combination": true,
@@ -31,6 +32,4 @@ func main() {
 	}
 
 	app.Application(config, numbers2)
-
-	profiler.MemProfiler()
 }
