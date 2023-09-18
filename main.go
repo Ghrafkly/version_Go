@@ -42,19 +42,6 @@ var (
 )
 
 func main() {
-	flag.Parse()
-	if *cpuprofile != "" {
-		f, err := os.Create(*cpuprofile)
-		if err != nil {
-			log.Fatal("could not create CPU profile: ", err)
-		}
-		defer f.Close() // error handling omitted for example
-		if err := pprof.StartCPUProfile(f); err != nil {
-			log.Fatal("could not start CPU profile: ", err)
-		}
-		defer pprof.StopCPUProfile()
-	}
-
 	var config = map[string]bool{
 		"combination": true,
 		"permutation": true,
@@ -62,10 +49,13 @@ func main() {
 		"print":       true,
 	}
 
-	application(
-		config,
-		numbers2,
-	)
+	// Test single call of postfix
+	testTime := time.Now()
+	eq := postfix(numbers1)
+	log.Println("Time:", time.Since(testTime))
+	log.Println("Equations:", len(eq))
+
+	application(config, numbers2)
 
 	if *memprofile != "" {
 		f, err := os.Create(*memprofile)
@@ -115,12 +105,12 @@ func application(enabled map[string]bool, numbers []int8) {
 	//}
 
 	if enabled["permutation"] {
-		permutationRunner2(combinationTrie.getPaths())
+		permutationRunnerSingleThread(combinationTrie.getPaths())
 		permutationsTime = time.Since(start) - combinationTime
 	}
 
 	if enabled["postfix"] {
-		postfixRunner2(permutationTrie.getPaths())
+		postfixRunnerSingleThread(permutationTrie.getPaths())
 		postfixTime = time.Since(start) - permutationsTime
 	}
 
@@ -152,17 +142,5 @@ func application(enabled map[string]bool, numbers []int8) {
 		})
 
 		prettyPrint(pp)
-	}
-
-	if *memprofile != "" {
-		f, err := os.Create(*memprofile)
-		if err != nil {
-			log.Fatal("could not create memory profile: ", err)
-		}
-		defer f.Close() // error handling omitted for example
-		runtime.GC()    // get up-to-date statistics
-		if err := pprof.WriteHeapProfile(f); err != nil {
-			log.Fatal("could not write memory profile: ", err)
-		}
 	}
 }

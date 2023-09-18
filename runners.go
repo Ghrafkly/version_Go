@@ -21,7 +21,7 @@ func permutationRunner(combinations [][]int8) {
 	wg.Wait()
 }
 
-func permutationRunner2(combinations [][]int8) {
+func permutationRunnerSingleThread(combinations [][]int8) {
 	for _, combination := range combinations {
 		permutations(combination)
 	}
@@ -72,16 +72,19 @@ func postfixRunner() {
 	//wg.Wait()
 }
 
-func postfixRunner2(permutations [][]int8) {
-	wg.Add(len(permutations))
+func postfixRunnerSingleThread(permutations [][]int8) {
 	for _, permutation := range permutations {
-		go func(permutation []int8) {
-			result := postfix(permutation)
-			permutationPostfixMap.Store(&permutation, result)
-			atomic.AddInt64(&equationsCount, int64(len(result)))
-			permutationPostfixMap.Delete(&permutation) // Free up memory
-			wg.Done()
-		}(permutation)
+		postfix(permutation)
 	}
-	wg.Wait()
+	//wg.Add(len(permutations))
+	//for _, permutation := range permutations {
+	//	go func(permutation []int8) {
+	//		result := postfix(permutation)
+	//		permutationPostfixMap.Store(&permutation, result)
+	//		atomic.AddInt64(&equationsCount, int64(len(result)))
+	//		permutationPostfixMap.Delete(&permutation) // Free up memory
+	//		wg.Done()
+	//	}(permutation)
+	//}
+	//wg.Wait()
 }
