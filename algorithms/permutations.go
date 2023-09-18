@@ -1,10 +1,10 @@
-package main
+package algorithms
 
 import (
 	"gonum.org/v1/gonum/stat/combin"
 )
 
-func permutations(nums []int8) [][]int8 {
+func Permutations(nums []int8) [][]int8 {
 	trie := NewTrie()
 	perms := combin.Permutations(len(nums), len(nums))
 
@@ -13,9 +13,9 @@ func permutations(nums []int8) [][]int8 {
 		for _, i := range p {
 			temp = append(temp, nums[i])
 		}
-		trie.insert(temp)
+		trie.Insert(temp)
 		temp = nil
 	}
 
-	return trie.getPaths()
+	return trie.GetPaths()
 }

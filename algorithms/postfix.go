@@ -1,6 +1,8 @@
-package main
+package algorithms
 
-func postfix(nums []int8) [][]int8 {
+var operators = []int8{-1, -2, -3, -4}
+
+func Postfix(nums []int8) [][]int8 {
 	var current []int8            // Stores the current postfix equation
 	var equations [][]int8        // Stores all postfix equations for a given permutation
 	var operatorsNeeded int8 = -1 // The number of operators needed to complete the postfix equation

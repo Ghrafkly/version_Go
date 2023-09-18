@@ -1,8 +1,12 @@
-package main
+package algorithms
 
-import "gonum.org/v1/gonum/stat/combin"
+import (
+	"gonum.org/v1/gonum/stat/combin"
+)
 
-func combinations(nums []int8, k int) {
+var CombinationTrie *Trie
+
+func Combinations(nums []int8, k int) {
 	combs := combin.Combinations(len(nums), k)
 
 	var temp []int8
@@ -11,7 +15,7 @@ func combinations(nums []int8, k int) {
 		for _, i := range c {
 			temp = append(temp, nums[i])
 		}
-		combinationTrie.insert(temp)
+		CombinationTrie.Insert(temp)
 		temp = nil
 	}
 }

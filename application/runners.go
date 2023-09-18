@@ -1,18 +1,19 @@
-package main
+package application
 
 import (
 	"sync/atomic"
+	algos "version_Go/algorithms"
 )
 
 func combinationRunner(nums []int8, k int) {
-	combinations(nums, k)
+	algos.Combinations(nums, k)
 }
 
 func permutationRunner(combinations [][]int8) {
 	wg.Add(len(combinations))
 	for _, combination := range combinations {
 		go func(combination []int8) {
-			result := permutations(combination)
+			result := algos.Permutations(combination)
 			combinationPermutationMap.Store(&combination, result)
 			atomic.AddInt64(&permutationCount, int64(len(result)))
 			wg.Done()
@@ -26,7 +27,7 @@ func postfixRunner() {
 	for combination, perms := range testMap {
 		go func(combination *[]int8, permutations [][]int8) {
 			for _, permutation := range permutations {
-				result := postfix(permutation)
+				result := algos.Postfix(permutation)
 				permutationPostfixMap.Store(&permutation, result)
 				atomic.AddInt64(&equationsCount, int64(len(result)))
 				permutationPostfixMap.Delete(&permutation) // Free up memory

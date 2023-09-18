@@ -1,9 +1,8 @@
-package main
+package application
 
 import (
 	"github.com/fatih/color"
 	"github.com/rodaine/table"
-	"sync"
 )
 
 func prettyPrint(pp PrettyPrinter) {
@@ -24,16 +23,4 @@ func prettyPrint(pp PrettyPrinter) {
 	}
 
 	tbl.Print()
-}
-
-func printSyncMap(m *sync.Map) {
-	printMap := make(map[int]int)
-	m.Range(func(key, value interface{}) bool {
-		printMap[key.(int)] = value.(int)
-		return true
-	})
-
-	//for i := 101; i < 1000; i++ {
-	//	fmt.Println(i, printMap[i])
-	//}
 }

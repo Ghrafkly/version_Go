@@ -1,4 +1,4 @@
-package main
+package algorithms
 
 type Trie struct {
 	root *TrieNode
@@ -18,7 +18,7 @@ func (t *TrieNode) isEnd() bool {
 	return t.children == nil
 }
 
-func (t *Trie) insert(nums []int8) {
+func (t *Trie) Insert(nums []int8) {
 	current := t.root
 	for _, index := range nums {
 		if _, ok := current.children[index]; !ok {
@@ -31,7 +31,7 @@ func (t *Trie) insert(nums []int8) {
 	}
 }
 
-func (t *Trie) search(nums []int8) bool {
+func (t *Trie) Search(nums []int8) bool {
 	current := t.root
 	for _, index := range nums {
 		if _, ok := current.children[index]; !ok {
@@ -42,7 +42,7 @@ func (t *Trie) search(nums []int8) bool {
 	return current.isEnd()
 }
 
-func (t *Trie) getPaths() [][]int8 {
+func (t *Trie) GetPaths() [][]int8 {
 	var result [][]int8
 	var temp []int8
 	paths := getPaths(t.root.children)
@@ -72,7 +72,7 @@ func getPaths(path map[int8]*TrieNode) [][]int8 {
 	return result
 }
 
-func (t *Trie) totalPaths() int {
+func (t *Trie) TotalPaths() int {
 	return totalPaths(t.root.children)
 }
 

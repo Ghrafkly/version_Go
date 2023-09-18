@@ -1,4 +1,4 @@
-package main
+package application
 
 type Intermediate struct {
 	x  int8
